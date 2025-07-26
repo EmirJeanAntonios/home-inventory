@@ -2,14 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
-
-export interface CreateUserDto {
-    name: string;
-    email: string;
-    password: string;
-    roleId: number;
-}
 
 @Injectable()
 export class UsersService {
@@ -44,7 +39,7 @@ export class UsersService {
         });
     }
 
-    async update(id: number, userData: Partial<User>): Promise<User> {
+    async update(id: number, userData: UpdateUserDto): Promise<User> {
         // If password is being updated, it will be hashed by @BeforeUpdate hook
         await this.userRepository.update(id, userData);
         return this.findById(id);
