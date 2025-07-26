@@ -56,6 +56,7 @@ export const useRegister = () => {
       password: string;
     }) => register(name, email, password),
     onSuccess: (data) => {
+
       // Set user data in cache
       queryClient.setQueryData(authKeys.user, data.user);
       // Navigate to dashboard

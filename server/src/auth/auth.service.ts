@@ -45,27 +45,15 @@ export class AuthService {
         }
 
         // Set default role if not provided
-        let roleId = registerDto.roleId;
-        if (!roleId) {
-            const defaultRole = await this.rolesService.findByName('user');
-            if (!defaultRole) {
-                throw new BadRequestException('Default user role not found');
-            }
-            roleId = defaultRole.id;
-        } else {
-            // Verify role exists
-            const role = await this.rolesService.findOne(roleId);
-            if (!role) {
-                throw new BadRequestException('Invalid role ID');
-            }
-        }
+        let roleId = 2; // default role id for user
+
 
         // Create user
         const user = await this.usersService.create({
             name: registerDto.name,
             email: registerDto.email,
             password: registerDto.password,
-            roleId: roleId,
+            roleId: roleId
         });
 
         // Generate JWT token
@@ -73,7 +61,7 @@ export class AuthService {
             sub: user.id,
             email: user.email,
             roleId: roleId,
-
+            roleName: user.role.name,
         };
 
         return {

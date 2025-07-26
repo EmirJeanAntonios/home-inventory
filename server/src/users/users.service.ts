@@ -16,7 +16,9 @@ export class UsersService {
     async create(userData: CreateUserDto): Promise<User> {
         const user = this.userRepository.create(userData);
         // Password will be automatically hashed by the @BeforeInsert hook in the entity
-        return this.userRepository.save(user);
+        const savedUser = await this.userRepository.save(user);
+        // Fetch the user with relations to ensure role is populated
+        return this.findById(savedUser.id);
     }
 
     async findOne(email: string): Promise<User | undefined> {

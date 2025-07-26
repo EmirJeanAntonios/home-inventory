@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  BeforeInsert,
+  BeforeUpdate,
+} from 'typeorm';
 import { Role } from '../roles/role.entity';
 import * as bcrypt from 'bcrypt';
 
@@ -16,11 +24,11 @@ export class User {
   @Column()
   password: string;
 
-  @ManyToOne(() => Role, role => role.users, { eager: true })
+  @ManyToOne(() => Role, (role) => role.users, { eager: true })
   @JoinColumn({ name: 'roleId' })
   role: Role;
 
-  @Column({ name: 'roleId' })
+  @Column({ name: 'roleId', default: 2 })
   roleId: number;
 
   @BeforeInsert()
@@ -35,4 +43,4 @@ export class User {
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
-} 
+}
