@@ -21,16 +21,30 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@GetUser() user: any) {
-    return user;
+  async getProfile(@GetUser() user: any) {
+    // Get complete user data from database
+    const fullUser = await this.authService.getUserById(user.id);
+    return {
+      id: fullUser.id,
+      name: fullUser.name,
+      email: fullUser.email,
+      role: fullUser.role,
+    };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('verify')
   async verifyToken(@GetUser() user: any) {
+    // Get complete user data from database
+    const fullUser = await this.authService.getUserById(user.id);
     return {
       valid: true,
-      user: user,
+      user: {
+        id: fullUser.id,
+        name: fullUser.name,
+        email: fullUser.email,
+        role: fullUser.role,
+      },
     };
   }
 } 

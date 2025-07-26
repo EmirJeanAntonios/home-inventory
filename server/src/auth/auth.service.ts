@@ -72,8 +72,8 @@ export class AuthService {
         const payload: JwtPayload = {
             sub: user.id,
             email: user.email,
-            roleId: user.role.id,
-            roleName: user.role.name,
+            roleId: roleId,
+
         };
 
         return {
@@ -121,5 +121,9 @@ export class AuthService {
             email: user.email,
             role: user.role,
         };
+    }
+
+    async getUserById(id: number) {
+        return this.usersService.findById(id);
     }
 }
