@@ -1,24 +1,60 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
+import * as bcrypt from 'bcrypt';
 
-export type User = {
-    id: number;
+export interface CreateUserDto {
     name: string;
     email: string;
     password: string;
-};
+    roleId: number;
+}
 
 @Injectable()
 export class UsersService {
-    private readonly users: User[] = [
-        {
-            id: 1,
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            password: 'password',
-        },
-    ];
+    constructor(
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
+    ) {}
+
+    async create(userData: CreateUserDto): Promise<User> {
+        const user = this.userRepository.create(userData);
+        // Password will be automatically hashed by the @BeforeInsert hook in the entity
+        return this.userRepository.save(user);
+    }
 
     async findOne(email: string): Promise<User | undefined> {
-        return this.users.find(user => user.email === email);
+        return this.userRepository.findOne({ 
+            where: { email },
+            relations: ['role']
+        });
+    }
+
+    async findById(id: number): Promise<User | undefined> {
+        return this.userRepository.findOne({ 
+            where: { id },
+            relations: ['role']
+        });
+    }
+
+    async findAll(): Promise<User[]> {
+        return this.userRepository.find({
+            relations: ['role']
+        });
+    }
+
+    async update(id: number, userData: Partial<User>): Promise<User> {
+        // If password is being updated, it will be hashed by @BeforeUpdate hook
+        await this.userRepository.update(id, userData);
+        return this.findById(id);
+    }
+
+    async delete(id: number): Promise<void> {
+        await this.userRepository.delete(id);
+    }
+
+    async validatePassword(user: User, password: string): Promise<boolean> {
+        return bcrypt.compare(password, user.password);
     }
 }
