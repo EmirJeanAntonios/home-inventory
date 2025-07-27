@@ -5,10 +5,11 @@ import "./index.css";
 import AuthLayout from "./pages/auth/layout.tsx";
 import Login from "./pages/auth/login.tsx";
 import Signup from "./pages/auth/signup.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
+import Dashboard from "./pages/dashboard.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import AuthRedirect from "./components/AuthRedirect.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Layout from "./pages/layout.tsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,25 +25,30 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <Routes>
         {/* Protected Routes */}
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Layout />
             </ProtectedRoute>
-          } 
-        />
-        
+          }
+        >
+          <Route path="/" element={<Dashboard />} />
+        </Route>
+
         {/* Auth Routes */}
-        <Route path="/auth" element={
-          <AuthRedirect>
-            <AuthLayout />
-          </AuthRedirect>
-        }>
+        <Route
+          path="/auth"
+          element={
+            <AuthRedirect>
+              <AuthLayout />
+            </AuthRedirect>
+          }
+        >
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
         </Route>
-        
+
         {/* Catch all - redirect to dashboard */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
